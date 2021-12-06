@@ -21,14 +21,13 @@ def get_weather():
     zip = os.getenv('ZIP')
     key = os.getenv('WEATHER_KEY')
     url = f"https://api.openweathermap.org/data/2.5/weather?zip={zip},us&units=imperial&appid={key}"
-    # response = requests.get(url)
-    # pprint(response.json())
-    # temp = response['main']['feels_like']
-    # status = response['weather'][0]['main']
-    # response = {'temp': temp, 'status': status}
-    response = {'temp': 30, 'status': 'sunny'}
+    response = requests.get(url)
+    response = response.json()
     pprint(response)
-    return response
+    temp = response['main']['feels_like']
+    status = response['weather'][0]['main']
+    data = {'temp': temp, 'status': status}
+    return data
 
 
 def get_wled_status():
