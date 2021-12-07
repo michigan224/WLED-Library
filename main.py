@@ -3,13 +3,27 @@ from pprint import pprint
 from dotenv import load_dotenv
 import time
 import os
+import random
 
 load_dotenv()
 
 
 def main():
+    while True:
+        if get_wled_status()['on']:
+            weather = get_weather()
+            turn_on = {"on": "t", "v": True, "seg": [{"pal": 0}]}
+            turn_on = {"v": True, "seg": [{"pal": 2}]}
+            data = weather_to_data(weather)
+            pprint(data)
+            pprint(update_wled(data))
+        time.sleep(60)
     weather = get_weather()
-    get_wled_status()
+    pprint(weather)
+    pprint(weather_to_data(weather))
+    update_wled(weather_to_data(weather))
+    exit(1)
+    weather = get_weather()
     turn_on = {"on": "t", "v": True, "seg": [{"pal": 0}]}
     turn_on = {"v": True, "seg": [{"pal": 2}]}
     data = weather_to_data(weather)
@@ -17,35 +31,31 @@ def main():
 
 
 def get_weather():
-    # get long and lat from .env
     zip = os.getenv('ZIP')
     key = os.getenv('WEATHER_KEY')
     url = f"https://api.openweathermap.org/data/2.5/weather?zip={zip},us&units=imperial&appid={key}"
-    response = requests.get(url)
-    response = response.json()
-    pprint(response)
-    temp = response['main']['feels_like']
+    response = requests.get(url).json()
+    temp = response['main']['temp']
     status = response['weather'][0]['main']
-    data = {'temp': temp, 'status': status}
+    data = {'temp': temp, 'status': status,
+            'temp_min': response['main']['temp_min'], 'temp_max': response['main']['temp_max']}
     return data
 
 
 def get_wled_status():
     ip = os.getenv('WLED_IP')
     url = f"http://{ip}/json/state"
-    print(url)
     response = requests.get(url)
     state = response.json()
-    # pprint(state)
     return state
 
 
 def update_wled(data):
+    status = get_wled_status()
     ip = os.getenv('WLED_IP')
     url = f"http://{ip}/json/state"
     response = requests.post(url, json=data)
     state = response.json()
-    # pprint(state)
     return state
 
 
@@ -53,9 +63,41 @@ def weather_to_data(weather):
     temp = weather['temp']
     status = weather['status']
     data = {}
-    if status == 'sunny':
+    percentile = (weather['temp'] - weather['temp_min']) / \
+        (weather['temp_max'] - weather['temp_min'])
+    if status == 'Thunderstorm':
         data = {"v": True, "seg": [
-            {"pal": 4, "col": [[255, 129, 0], [255, 154, 0], [255, 193, 0]]}]}
+            {"pal": 7, "fx": 43, "sx": 255, "ix": 255}]}
+    elif status == 'Drizzle':
+        data = {"v": True, "seg": [
+            {"pal": 7, "fx": 43, "sx": 255, "ix": 55}]}
+    elif status == 'Rain':
+        data = {"v": True, "seg": [
+            {"pal": 7, "fx": 43, "sx": 255, "ix": 120}]}
+    elif status == 'Snow':
+        data = {"v": True, "seg": [
+            {"pal": 36, "fx": 43, "sx": 255, "ix": 120}]}
+    elif status == 'Atmosphere':
+        data = {"v": True, "seg": [
+            {"pal": 4, "fx": 2, "sx": 100, "ix": 110, "col": [[211, 224, 255], [0, 0, 77], [203, 219, 255]]}]}
+    elif status == 'Clear':
+        col1 = [91 + (30 * percentile), 161 + (30 * percentile),
+                176 + (30 * (1 - percentile))]
+        col2 = [220 + (10 * percentile), 226 + (10 * percentile),
+                225 + (10 * (1 - percentile))]
+        col3 = [216 + (30 * percentile), 202 + (30 * percentile),
+                174 + (30 * (1 - percentile))]
+        data = {"v": True, "seg": [
+            {"pal": 4, "col": [col1, col2, col3]}]}
+    elif status == 'Clouds':
+        col1 = [221 + (20 * percentile), 231 + (10 * percentile),
+                238 + (10 * (1 - percentile))]
+        col2 = [57 + (10 * percentile), 107 + (10 * percentile),
+                137 + (10 * (1 - percentile))]
+        col3 = [32 + (30 * percentile), 37 + (30 * percentile),
+                71 + (30 * (1 - percentile))]
+        data = {"v": True, "seg": [
+            {"pal": 4, "col": [col1, col2, col3]}]}
     return data
 
 
