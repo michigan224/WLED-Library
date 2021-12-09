@@ -1,39 +1,30 @@
-import requests
-from pprint import pprint
-from dotenv import load_dotenv
+"""Main file to change and set lights."""
 import time
 import os
-import random
+from pprint import pprint
+import requests
+from dotenv import load_dotenv  # pylint: disable=import-error
 
 load_dotenv()
 
 
 def main():
+    """Main function that handles loop and sleep."""
     while True:
         if get_wled_status()['on']:
             weather = get_weather()
-            turn_on = {"on": "t", "v": True, "seg": [{"pal": 0}]}
-            turn_on = {"v": True, "seg": [{"pal": 2}]}
             data = weather_to_data(weather)
             pprint(data)
             pprint(update_wled(data))
         time.sleep(60)
-    weather = get_weather()
-    pprint(weather)
-    pprint(weather_to_data(weather))
-    update_wled(weather_to_data(weather))
-    exit(1)
-    weather = get_weather()
-    turn_on = {"on": "t", "v": True, "seg": [{"pal": 0}]}
-    turn_on = {"v": True, "seg": [{"pal": 2}]}
-    data = weather_to_data(weather)
-    update_wled(data)
 
 
 def get_weather():
-    zip = os.getenv('ZIP')
+    """Return temperature information and state."""
+    zip_code = os.getenv('ZIP')
     key = os.getenv('WEATHER_KEY')
-    url = f"https://api.openweathermap.org/data/2.5/weather?zip={zip},us&units=imperial&appid={key}"
+    url = f"""https://api.openweathermap.org/data/2.5/weather?zip={zip_code},
+                us&units=imperial&appid={key}"""
     response = requests.get(url).json()
     temp = response['main']['temp']
     status = response['weather'][0]['main']
@@ -43,24 +34,25 @@ def get_weather():
 
 
 def get_wled_status():
-    ip = os.getenv('WLED_IP')
-    url = f"http://{ip}/json/state"
+    """Return current status of WLED lights."""
+    wled_ip = os.getenv('WLED_IP')
+    url = f"http://{wled_ip}/json/state"
     response = requests.get(url)
     state = response.json()
     return state
 
 
 def update_wled(data):
-    status = get_wled_status()
-    ip = os.getenv('WLED_IP')
-    url = f"http://{ip}/json/state"
+    """Sends new state to WLED and return response."""
+    wled_ip = os.getenv('WLED_IP')
+    url = f"http://{wled_ip}/json/state"
     response = requests.post(url, json=data)
     state = response.json()
     return state
 
 
 def weather_to_data(weather):
-    temp = weather['temp']
+    """Return updated values based on current weather."""
     status = weather['status']
     data = {}
     percentile = (weather['temp'] - weather['temp_min']) / \
@@ -79,7 +71,8 @@ def weather_to_data(weather):
             {"pal": 36, "fx": 43, "sx": 255, "ix": 120}]}
     elif status == 'Atmosphere':
         data = {"v": True, "seg": [
-            {"pal": 4, "fx": 2, "sx": 100, "ix": 110, "col": [[211, 224, 255], [0, 0, 77], [203, 219, 255]]}]}
+            {"pal": 4, "fx": 2, "sx": 100, "ix": 110,
+             "col": [[211, 224, 255], [0, 0, 77], [203, 219, 255]]}]}
     elif status == 'Clear':
         col1 = [91 + (30 * percentile), 161 + (30 * percentile),
                 176 + (30 * (1 - percentile))]
