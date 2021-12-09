@@ -4,18 +4,18 @@ import os
 from pprint import pprint
 import requests
 from dotenv import load_dotenv  # pylint: disable=import-error
+from Classes.wled import Wled
 
 load_dotenv()
 
 
 def main():
     """Handle loop and sleep."""
+    lights = Wled(os.getenv('WLED_IP'))
     while True:
-        if get_wled_status()['on']:
-            weather = get_weather()
-            data = weather_to_data(weather)
-            pprint(data)
-            pprint(update_wled(data))
+        weather = get_weather()
+        data = weather_to_data(weather)
+        lights.update(data)
         time.sleep(60)
 
 
