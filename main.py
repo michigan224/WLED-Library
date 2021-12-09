@@ -1,7 +1,6 @@
 """Main file to change and set lights."""
 import time
 import os
-from pprint import pprint
 import requests
 from dotenv import load_dotenv  # pylint: disable=import-error
 from classes.wled import Wled
