@@ -9,7 +9,7 @@ load_dotenv()
 
 
 def main():
-    """Main function that handles loop and sleep."""
+    """Handle loop and sleep."""
     while True:
         if get_wled_status()['on']:
             weather = get_weather()
@@ -43,7 +43,7 @@ def get_wled_status():
 
 
 def update_wled(data):
-    """Sends new state to WLED and return response."""
+    """Send new state to WLED and return response."""
     wled_ip = os.getenv('WLED_IP')
     url = f"http://{wled_ip}/json/state"
     response = requests.post(url, json=data)
