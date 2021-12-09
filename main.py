@@ -4,7 +4,7 @@ import os
 from pprint import pprint
 import requests
 from dotenv import load_dotenv  # pylint: disable=import-error
-from Classes.wled import Wled
+from classes.wled import Wled
 
 load_dotenv()
 

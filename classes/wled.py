@@ -75,7 +75,13 @@ class Wled:
         return status['on']
 
     def get_status(self):
-        """Return current status of WLED lights."""
+        """
+        Return current status of WLED lights.
+
+        Returns
+        -------
+        The current state of the WLED lights.
+        """
         response = requests.get(self.url)
         status = response.json()
         if response.status_code == 200:
@@ -88,16 +94,14 @@ class Wled:
         """
         Send new state to WLED and return response.
 
-        If the argument 'additional' is passed, then it is appended after the main info.
-
         Parameters
         ----------
-        additional : str, optional
-            More info to be displayed (default is None)
+        data : dictionary
+            Updated state to be passed to the lights.
 
         Returns
         -------
-        None
+        State after the update is sent to the lights.
         """
         response = requests.post(self.url, json=data)
         status = response.json()
