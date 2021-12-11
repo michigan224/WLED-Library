@@ -32,7 +32,7 @@ class Weather:
         Sends new state to the lights and returns the response.
     """
 
-    def __init__(self: str, zip_code: str, api_key: str):
+    def __init__(self, zip_code: str, api_key: str) -> None:
         """
         Initialize Weather class.
 
@@ -68,52 +68,17 @@ class Weather:
         """
         return self.zip_code
 
-    def get_lights_on(self):
+    def get_weather(self) -> dict:
         """
-        Return whether or not the WLEDs is on.
+        Return temperature information and state.
 
         Returns
         -------
-        True if the lights are on, False if not.
+        Dict containing temperature, status, min and max temperatures.
         """
-        status = self.get_status()
-        if status['error']:
-            return False
-        return status['on']
-
-    def get_status(self):
-        """
-        Return current status of WLED lights.
-
-        Returns
-        -------
-        The current state of the WLED lights.
-        """
-        response = requests.get(self.url)
-        status = response.json()
-        if response.status_code == 200:
-            status['error'] = False
-            return status
-        status['error'] = True
-        return status
-
-    def update(self, data):
-        """
-        Send new state to WLED and return response.
-
-        Parameters
-        ----------
-        data : dictionary
-            Updated state to be passed to the lights.
-
-        Returns
-        -------
-        State after the update is sent to the lights.
-        """
-        response = requests.post(self.url, json=data)
-        status = response.json()
-        if response.status_code == 200:
-            status['error'] = False
-            return status
-        status['error'] = True
-        return status
+        response = requests.get(self.url).json()
+        temp = response['main']['temp']
+        status = response['weather'][0]['main']
+        data = {'temp': temp, 'status': status,
+                'temp_min': response['main']['temp_min'], 'temp_max': response['main']['temp_max']}
+        return data
