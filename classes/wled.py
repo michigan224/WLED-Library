@@ -29,7 +29,7 @@ class Wled:
         Sends new state to the lights and returns the response.
     """
 
-    def __init__(self, ip_address):
+    def __init__(self, ip_address: str) -> None:
         """
         Initialize WLED class.
 
@@ -41,7 +41,7 @@ class Wled:
         self.wled_ip = ip_address
         self.url = f"http://{self.wled_ip}/json/state"
 
-    def get_url(self):
+    def get_url(self) -> str:
         """
         Return WLED URL.
 
@@ -51,7 +51,7 @@ class Wled:
         """
         return self.url
 
-    def get_ip(self):
+    def get_ip(self) -> str:
         """
         Return WLED IP.
 
@@ -61,7 +61,7 @@ class Wled:
         """
         return self.wled_ip
 
-    def get_lights_on(self):
+    def get_lights_on(self) -> bool:
         """
         Return whether or not the WLEDs is on.
 
@@ -74,7 +74,7 @@ class Wled:
             return False
         return status['on']
 
-    def get_status(self):
+    def get_status(self) -> dict:
         """
         Return current status of WLED lights.
 
@@ -90,7 +90,7 @@ class Wled:
         status['error'] = True
         return status
 
-    def update(self, data):
+    def update(self, data: dict) -> dict:
         """
         Send new state to WLED and return response.
 

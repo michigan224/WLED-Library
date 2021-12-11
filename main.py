@@ -4,6 +4,7 @@ import os
 import requests
 from dotenv import load_dotenv  # pylint: disable=import-error
 from classes.wled import Wled
+from classes.weather import Weather
 
 load_dotenv()
 
@@ -11,43 +12,12 @@ load_dotenv()
 def main():
     """Handle loop and sleep."""
     lights = Wled(os.getenv('WLED_IP'))
+    weather = Weather(os.getenv('ZIP'), os.getenv('WEATHER_KEY'))
     while True:
-        weather = get_weather()
-        data = weather_to_data(weather)
+        weather_data = weather.get_weather()
+        data = weather_to_data(weather_data)
         lights.update(data)
         time.sleep(60)
-
-
-def get_weather():
-    """Return temperature information and state."""
-    zip_code = os.getenv('ZIP')
-    key = os.getenv('WEATHER_KEY')
-    url = f"""https://api.openweathermap.org/data/2.5/weather?zip={zip_code},
-                us&units=imperial&appid={key}"""
-    response = requests.get(url).json()
-    temp = response['main']['temp']
-    status = response['weather'][0]['main']
-    data = {'temp': temp, 'status': status,
-            'temp_min': response['main']['temp_min'], 'temp_max': response['main']['temp_max']}
-    return data
-
-
-def get_wled_status():
-    """Return current status of WLED lights."""
-    wled_ip = os.getenv('WLED_IP')
-    url = f"http://{wled_ip}/json/state"
-    response = requests.get(url)
-    state = response.json()
-    return state
-
-
-def update_wled(data):
-    """Send new state to WLED and return response."""
-    wled_ip = os.getenv('WLED_IP')
-    url = f"http://{wled_ip}/json/state"
-    response = requests.post(url, json=data)
-    state = response.json()
-    return state
 
 
 def weather_to_data(weather):
