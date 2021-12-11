@@ -1,4 +1,4 @@
-name: Pylint
+name: Pylint and Pydocstyle
 
 on: [push]
 
