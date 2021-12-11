@@ -32,7 +32,7 @@ class Weather:
         Sends new state to the lights and returns the response.
     """
 
-    def __init__(self, zip_code, api_key):
+    def __init__(self: str, zip_code: str, api_key: str):
         """
         Initialize Weather class.
 
@@ -48,25 +48,25 @@ class Weather:
         self.url = f"""https://api.openweathermap.org/data/2.5/weather?zip={zip_code},
                 us&units=imperial&appid={api_key}"""
 
-    def get_url(self):
+    def get_url(self) -> str:
         """
-        Return WLED URL.
+        Return weather api URL.
 
         Returns
         -------
-        Address of the wled light state.
+        Address of the weather api.
         """
         return self.url
 
-    def get_ip(self):
+    def get_zip_code(self) -> str:
         """
-        Return WLED IP.
+        Return zip code.
 
         Returns
         -------
-        IP address of the lights.
+        Zip code.
         """
-        return self.wled_ip
+        return self.zip_code
 
     def get_lights_on(self):
         """
