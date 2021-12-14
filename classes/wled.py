@@ -1,5 +1,6 @@
 """Contains the WLED class."""
 import requests
+from utils import handle_request
 
 
 class Wled:

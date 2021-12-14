@@ -14,8 +14,9 @@ def main():
     weather = Weather(os.getenv('ZIP'), os.getenv('WEATHER_KEY'))
     while True:
         weather_data = weather.get_weather()
-        data = weather_to_data(weather_data)
-        lights.update(data)
+        if weather_data:
+            data = weather_to_data(weather_data)
+            lights.update(data)
         time.sleep(60)
 
 

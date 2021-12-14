@@ -1,5 +1,6 @@
 """Contains the Weather class."""
 import requests
+from utils import handle_request
 
 
 class Weather:
@@ -77,6 +78,8 @@ class Weather:
         Dict containing temperature, status, min and max temperatures.
         """
         response = requests.get(self.url).json()
+        if response.status_code != 200:
+            return False
         temp = response['main']['temp']
         status = response['weather'][0]['main']
         data = {'temp': temp, 'status': status,
