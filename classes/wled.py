@@ -1,7 +1,7 @@
 """Contains the WLED class."""
 import logging
 
-from .utils import handle_request
+from classes.utils import handle_request
 
 logger = logging.getLogger(__name__)
 

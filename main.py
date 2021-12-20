@@ -34,7 +34,7 @@ def main():
                 new_status = lights.update(data)
                 if new_status:
                     logging.info('Light\'s updated with data: %s', data)
-                    logging.info(f'New status: %s', new_status)
+                    logging.info('New status: %s', new_status)
         time.sleep(60)
 
 
