@@ -3,7 +3,7 @@
 import requests
 
 
-def handle_request(request):
+def handle_request(url, body=None):
     """
     Handle the request.
 
@@ -18,6 +18,10 @@ def handle_request(request):
         The response to the client.
     """
     try:
+        if not body:
+            request = requests.get(url)
+        else:
+            request = requests.post(url, json=body)
         request.raise_for_status()
         return request.json()
     except requests.exceptions.HTTPError as errh:

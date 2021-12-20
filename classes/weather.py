@@ -77,9 +77,7 @@ class Weather:
         -------
         Dict containing temperature, status, min and max temperatures.
         """
-        response = requests.get(self.url).json()
-        if response.status_code != 200:
-            return False
+        response = requests.get(self.url)
         temp = response['main']['temp']
         status = response['weather'][0]['main']
         data = {'temp': temp, 'status': status,

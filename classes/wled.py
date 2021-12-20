@@ -83,13 +83,8 @@ class Wled:
         -------
         The current state of the WLED lights.
         """
-        response = requests.get(self.url)
-        status = response.json()
-        if response.status_code == 200:
-            status['error'] = False
-            return status
-        status['error'] = True
-        return status
+        response = handle_request(self.url)
+        return response
 
     def update(self, data: dict) -> dict:
         """
@@ -104,10 +99,5 @@ class Wled:
         -------
         State after the update is sent to the lights.
         """
-        response = requests.post(self.url, json=data)
-        status = response.json()
-        if response.status_code == 200:
-            status['error'] = False
-            return status
-        status['error'] = True
+        status = handle_request(self.url, body=data)
         return status
