@@ -1,6 +1,9 @@
 """Contains the Weather class."""
-import requests
-from utils import handle_request
+import logging
+
+from .utils import handle_request
+
+logger = logging.getLogger(__name__)
 
 
 class Weather:
@@ -46,8 +49,7 @@ class Weather:
         """
         self.zip_code = zip_code
         self.api_key = api_key
-        self.url = f"""https://api.openweathermap.org/data/2.5/weather?zip={zip_code},
-                us&units=imperial&appid={api_key}"""
+        self.url = f"""https://api.openweathermap.org/data/2.5/weather?zip={zip_code},us&units=imperial&appid={api_key}"""
 
     def get_url(self) -> str:
         """
@@ -77,7 +79,9 @@ class Weather:
         -------
         Dict containing temperature, status, min and max temperatures.
         """
-        response = requests.get(self.url)
+        response = handle_request(self.url)
+        if not response:
+            return None
         temp = response['main']['temp']
         status = response['weather'][0]['main']
         data = {'temp': temp, 'status': status,

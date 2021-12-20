@@ -1,6 +1,9 @@
 """Handles utility functions for the WLED and weather classes."""
-# https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
+import logging
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 def handle_request(url, body=None):
@@ -17,6 +20,7 @@ def handle_request(url, body=None):
     str
         The response to the client.
     """
+    logger.info("Handling request: %s", url)
     try:
         if not body:
             request = requests.get(url)
@@ -25,13 +29,17 @@ def handle_request(url, body=None):
         request.raise_for_status()
         return request.json()
     except requests.exceptions.HTTPError as errh:
-        print("HTTP Error:", errh)
+        logging.error('HTTP error: %s', errh)
+        return None
     except requests.exceptions.ConnectionError as errc:
-        print("Error Connecting:", errc)
+        logging.error('Error Connecting: %s', errc)
+        return None
     except requests.exceptions.Timeout as errt:
-        print("Timeout Error:", errt)
+        logging.error('Timeout Error: %s', errt)
+        return None
     except requests.exceptions.RequestException as err:
-        print("Unknown Error:", err)
+        logging.error('Error: %s', err)
+        return None
 
 
 def weather_to_data(weather):

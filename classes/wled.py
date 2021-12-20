@@ -1,6 +1,9 @@
 """Contains the WLED class."""
-import requests
-from utils import handle_request
+import logging
+
+from .utils import handle_request
+
+logger = logging.getLogger(__name__)
 
 
 class Wled:
@@ -71,8 +74,8 @@ class Wled:
         True if the lights are on, False if not.
         """
         status = self.get_status()
-        if status['error']:
-            return False
+        if not status:
+            return None
         return status['on']
 
     def get_status(self) -> dict:
@@ -83,8 +86,7 @@ class Wled:
         -------
         The current state of the WLED lights.
         """
-        response = handle_request(self.url)
-        return response
+        return handle_request(self.url)
 
     def update(self, data: dict) -> dict:
         """
@@ -99,5 +101,4 @@ class Wled:
         -------
         State after the update is sent to the lights.
         """
-        status = handle_request(self.url, body=data)
-        return status
+        return handle_request(self.url, body=data)
