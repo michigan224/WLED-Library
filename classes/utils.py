@@ -29,16 +29,16 @@ def handle_request(url, body=None):
         request.raise_for_status()
         return request.json()
     except requests.exceptions.HTTPError as errh:
-        logging.error(f'HTTP error: {errh}')
+        logging.error('HTTP error: %s', errh)
         return None
     except requests.exceptions.ConnectionError as errc:
-        logging.error(f'Error Connecting: {errc}')
+        logging.error('Error Connecting: %s', errc)
         return None
     except requests.exceptions.Timeout as errt:
-        logging.error(f'Timeout Error: {errt}')
+        logging.error('Timeout Error: %s', errt)
         return None
     except requests.exceptions.RequestException as err:
-        logging.error(f'Error: {err}')
+        logging.error('Error: %s', err)
         return None
 
 

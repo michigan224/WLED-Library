@@ -49,7 +49,8 @@ class Weather:
         """
         self.zip_code = zip_code
         self.api_key = api_key
-        self.url = f"https://api.openweathermap.org/data/2.5/weather?zip={zip_code},us&units=imperial&appid={api_key}"
+        self.url = "https://api.openweathermap.org/data/2.5/weather?zip="
+        self.url += f"{zip_code},us&units=imperial&appid={api_key}"
 
     def get_url(self) -> str:
         """

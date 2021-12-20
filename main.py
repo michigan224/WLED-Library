@@ -14,7 +14,8 @@ LOG_FILENAME = datetime.now().strftime('./logs/logfile_%H_%M_%S_%d_%m_%Y.log')
 if not os.path.exists('./logs'):
     os.makedirs('./logs')
 logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME,
-                    format='%(asctime)s:%(name)s:%(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+                    format='%(asctime)s:%(name)s:%(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,10 @@ def main():
         if weather_data:
             data = weather_to_data(weather_data)
             if data:
-                logging.info(f'Weather data: {data}')
                 new_status = lights.update(data)
                 if new_status:
-                    logging.info(f'Light\'s updated with data: {data}')
-                    logging.info(f'New status: {new_status}')
+                    logging.info('Light\'s updated with data: %s', data)
+                    logging.info(f'New status: %s', new_status)
         time.sleep(60)
 
 
