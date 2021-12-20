@@ -30,9 +30,11 @@ def main():
         if weather_data:
             data = weather_to_data(weather_data)
             if data:
+                logging.info(f'Weather data: {data}')
                 new_status = lights.update(data)
                 if new_status:
-                    logging.debug('Light\'s updated with data: %s', data)
+                    logging.info(f'Light\'s updated with data: {data}')
+                    logging.info(f'New status: {new_status}')
         time.sleep(60)
 
 
