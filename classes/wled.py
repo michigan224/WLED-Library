@@ -87,9 +87,41 @@ class Wled:
         The current state of the WLED lights.
         """
         statuses = []
-        for ip_addr in self.wled_ip:
-            statuses.append(handle_request(ip_addr))
+        for url_addr in self.url:
+            statuses.append(handle_request(url_addr))
         return statuses
+
+    def __create_update_data(self, data: Union[dict, list]) -> Union[dict, list]:
+        """
+        Create data to be passed to the lights.
+
+        Parameters
+        ----------
+        data : dictionary
+            Updated state to be passed to the lights.
+
+        Returns
+        -------
+        Data to be passed to the lights.
+        """
+        curr_state = self.get_status()
+        data = [data] if isinstance(data, dict) else data
+        for idx, upd in enumerate(data):
+            if 'seg' in upd:
+                for seg_idx, seg in enumerate(upd['seg']):
+                    palette = curr_state[idx]['seg'][seg_idx]['pal']
+                    effect = curr_state[idx]['seg'][seg_idx]['fx']
+                    effect_speed = curr_state[idx]['seg'][seg_idx]['sx']
+                    effect_intensity = curr_state[idx]['seg'][seg_idx]['ix']
+                    if 'pal' in seg and seg['pal'] == palette:
+                        del seg['pal']
+                    if 'fx' in seg and seg['fx'] == effect:
+                        del seg['fx']
+                    if 'sx' in seg and seg['sx'] == effect_speed:
+                        del seg['sx']
+                    if 'ix' in seg and seg['ix'] == effect_intensity:
+                        del seg['ix']
+        return data
 
     def update(self, data: Union[dict, list], ip_addr=None) -> dict:
         """
@@ -105,11 +137,9 @@ class Wled:
         State after the update is sent to the lights.
         """
         if ip_addr:
-            return [handle_request(f"http://{ip_addr}/json/state", data)]
+            return [handle_request(f"http://{ip_addr}/json/state", self.__create_update_data(data))]
         new_statuses = []
+        parsed_data = self.__create_update_data(data)
         for idx, addr in enumerate(self.url):
-            if isinstance(data, list):
-                new_statuses.append(handle_request(addr, data[idx]))
-            else:
-                new_statuses.append(handle_request(addr, data))
+            new_statuses.append(handle_request(addr, parsed_data[idx]))
         return new_statuses
