@@ -112,3 +112,4 @@ class Wled:
                 new_statuses.append(handle_request(addr, data[idx]))
             else:
                 new_statuses.append(handle_request(addr, data))
+        return new_statuses
