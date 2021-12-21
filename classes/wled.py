@@ -1,5 +1,6 @@
 """Contains the WLED class."""
 import logging
+from typing import Union
 
 from classes.utils import handle_request
 
@@ -33,21 +34,22 @@ class Wled:
         Sends new state to the lights and returns the response.
     """
 
-    def __init__(self, ip_address: str) -> None:
+    def __init__(self, ip_address: Union[dict, str]) -> None:
         """
         Initialize WLED class.
 
         Parameters
         ----------
-            ip_address : str
-                ip address of the lights
+            ip_address : dict or str
+                ip address(es) of the lights
         """
-        self.wled_ip = ip_address
-        self.url = f"http://{self.wled_ip}/json/state"
+        self.wled_ip = ip_address if isinstance(
+            ip_address, list) else [ip_address]
+        self.url = [f"http://{ip}/json/state" for ip in self.wled_ip]
 
-    def get_url(self) -> str:
+    def get_url(self) -> list:
         """
-        Return WLED URL.
+        Return list of URLs for each light.
 
         Returns
         -------
@@ -55,9 +57,9 @@ class Wled:
         """
         return self.url
 
-    def get_ip(self) -> str:
+    def get_ip(self) -> list:
         """
-        Return WLED IP.
+        Return list of IPs.
 
         Returns
         -------
@@ -65,7 +67,7 @@ class Wled:
         """
         return self.wled_ip
 
-    def get_lights_on(self) -> bool:
+    def get_lights_on(self) -> list:
         """
         Return whether or not the WLEDs is on.
 
@@ -74,9 +76,7 @@ class Wled:
         True if the lights are on, False if not.
         """
         status = self.get_status()
-        if not status:
-            return None
-        return status['on']
+        status = [bool(state['on']) for state in status]
 
     def get_status(self) -> dict:
         """
@@ -86,9 +86,12 @@ class Wled:
         -------
         The current state of the WLED lights.
         """
-        return handle_request(self.url)
+        statuses = []
+        for ip_addr in self.wled_ip:
+            statuses.append(handle_request(ip_addr))
+        return statuses
 
-    def update(self, data: dict) -> dict:
+    def update(self, data: Union[dict, list], ip_addr=None) -> dict:
         """
         Send new state to WLED and return response.
 
@@ -101,4 +104,11 @@ class Wled:
         -------
         State after the update is sent to the lights.
         """
-        return handle_request(self.url, body=data)
+        if ip_addr:
+            return [handle_request(f"http://{ip_addr}/json/state", data)]
+        new_statuses = []
+        for idx, addr in enumerate(self.url):
+            if isinstance(data, list):
+                new_statuses.append(handle_request(addr, data[idx]))
+            else:
+                new_statuses.append(handle_request(addr, data))

@@ -42,7 +42,7 @@ def handle_request(url, body=None):
         return None
 
 
-def weather_to_data(weather):
+def weather_to_data(weather: dict) -> dict:
     """Return updated values based on current weather."""
     status = weather['status']
     data = {}
