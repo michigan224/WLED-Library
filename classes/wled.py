@@ -140,6 +140,6 @@ class Wled:
             return [handle_request(f"http://{ip_addr}/json/state", self.__create_update_data(data))]
         new_statuses = []
         parsed_data = self.__create_update_data(data)
-        for idx, addr in enumerate(self.url):
-            new_statuses.append(handle_request(addr, parsed_data[idx]))
+        for idx, upd_data in enumerate(parsed_data):
+            new_statuses.append(handle_request(self.url[idx], upd_data))
         return new_statuses
