@@ -47,6 +47,16 @@ class Wled:
             ip_address, list) else [ip_address]
         self.url = [f"http://{ip}/json/state" for ip in self.wled_ip]
 
+    def __str__(self) -> str:
+        """
+        Return string representation of Wled.
+
+        Returns
+        -------
+        String representation of Wled.
+        """
+        return f"WLED(s): {', '.join(self.wled_ip)}"
+
     def get_url(self) -> list:
         """
         Return list of URLs for each light.
@@ -106,6 +116,8 @@ class Wled:
         """
         curr_state = self.get_status()
         data = [data] if isinstance(data, dict) else data
+        if len(data) > len(self.url):
+            raise DataNotInRangeError(data, self.url)
         for idx, upd in enumerate(data):
             if 'seg' in upd:
                 for seg_idx, seg in enumerate(upd['seg']):
@@ -143,3 +155,36 @@ class Wled:
         for idx, upd_data in enumerate(parsed_data):
             new_statuses.append(handle_request(self.url[idx], upd_data))
         return new_statuses
+
+
+class DataNotInRangeError(Exception):
+    """
+    Exception for when data is not in range.
+
+    Parameters
+    ----------
+    data : str
+        Data that is not in range.
+    """
+
+    def __init__(self, data: list, ip_list: list) -> None:
+        """
+        Initialize DataNotInRangeError class.
+
+        Parameters
+        ----------
+        data : str
+            Data that is not in range.
+        """
+        self.data_length = len(data)
+        self.ip_list_length = len(ip_list)
+
+    def __str__(self) -> str:
+        """
+        Return string representation of DataNotInRangeError.
+
+        Returns
+        -------
+        String representation of DataNotInRangeError.
+        """
+        return f"Tried to update {self.data_length} lights, but only {self.ip_list_length} connected."
