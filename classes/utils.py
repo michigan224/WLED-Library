@@ -72,7 +72,7 @@ def weather_to_data(weather: dict) -> dict:
         col3 = [216 + (30 * percentile), 202 + (30 * percentile),
                 174 + (30 * (1 - percentile))]
         data = {"v": True, "seg": [
-            {"pal": 4, "col": [col1, col2, col3]}]}
+            {"pal": 4, "fx": 65, "sx": 128, "ix": 128, "col": [col1, col2, col3]}]}
     elif status == 'Clouds':
         col1 = [221 + (20 * percentile), 231 + (10 * percentile),
                 238 + (10 * (1 - percentile))]
@@ -81,5 +81,5 @@ def weather_to_data(weather: dict) -> dict:
         col3 = [32 + (30 * percentile), 37 + (30 * percentile),
                 71 + (30 * (1 - percentile))]
         data = {"v": True, "seg": [
-            {"pal": 4, "col": [col1, col2, col3]}]}
+            {"pal": 4, "fx": 65, "sx": 128, "ix": 128, "col": [col1, col2, col3]}]}
     return data

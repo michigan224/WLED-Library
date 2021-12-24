@@ -116,6 +116,7 @@ class Wled:
         -------
         Data to be passed to the lights.
         """
+        logger.debug('WLED update data: %s', data)
         curr_state = self.get_status()
         data = [data] if isinstance(data, dict) else data
         if len(data) > len(self.url):
@@ -135,7 +136,7 @@ class Wled:
                         del seg['sx']
                     if 'ix' in seg and seg['ix'] == effect_intensity:
                         del seg['ix']
-        logger.debug('WLED update data: %s', data)
+        logger.debug('Parsed WLED update data: %s', data)
         return data
 
     def update(self, data: Union[dict, list], ip_addr=None) -> dict:
