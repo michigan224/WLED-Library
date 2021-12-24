@@ -1,5 +1,7 @@
 """Main file to change and set lights."""
 import logging
+from logging.handlers import TimedRotatingFileHandler
+from logging import Formatter
 import os
 import time
 from datetime import datetime
@@ -10,14 +12,16 @@ from classes.utils import weather_to_data
 from classes.weather import Weather
 from classes.wled import Wled
 
-LOG_FILENAME = datetime.now().strftime('./logs/logfile_%H_%M_%S_%d_%m_%Y.log')
 if not os.path.exists('./logs'):
     os.makedirs('./logs')
-logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME,
-                    format='%(asctime)s:%(name)s:%(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = TimedRotatingFileHandler(
+    filename='./logs/runtime.log', when='D', interval=1, backupCount=10, encoding='utf-8', delay=False)
+formatter = Formatter(
+    fmt='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 load_dotenv()
 
@@ -31,10 +35,7 @@ def main():
         if weather_data:
             data = weather_to_data(weather_data)
             if data:
-                new_status = lights.update(data)
-                if new_status:
-                    logging.info('Light\'s updated with data: %s', data)
-                    logging.info('New status: %s', new_status)
+                lights.update(data)
         time.sleep(60)
 
 

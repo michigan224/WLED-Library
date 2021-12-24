@@ -46,6 +46,7 @@ class Wled:
         self.wled_ip = ip_address if isinstance(
             ip_address, list) else [ip_address]
         self.url = [f"http://{ip}/json/state" for ip in self.wled_ip]
+        logger.info("WLED created: %s", self)
 
     def __str__(self) -> str:
         """
@@ -99,6 +100,7 @@ class Wled:
         statuses = []
         for url_addr in self.url:
             statuses.append(handle_request(url_addr))
+        logger.debug("WLED current status: %s", statuses)
         return statuses
 
     def __create_update_data(self, data: Union[dict, list]) -> Union[dict, list]:
@@ -133,6 +135,7 @@ class Wled:
                         del seg['sx']
                     if 'ix' in seg and seg['ix'] == effect_intensity:
                         del seg['ix']
+        logger.debug('WLED update data: %s', data)
         return data
 
     def update(self, data: Union[dict, list], ip_addr=None) -> dict:
@@ -154,6 +157,7 @@ class Wled:
         parsed_data = self.__create_update_data(data)
         for idx, upd_data in enumerate(parsed_data):
             new_statuses.append(handle_request(self.url[idx], upd_data))
+        logger.debug("WLED updated: %s", new_statuses)
         return new_statuses
 
 
